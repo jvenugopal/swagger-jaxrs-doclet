@@ -87,15 +87,17 @@ public class JaxRsAnnotationParser {
 				recorder.record(apiFile, api);
 				apifilesList.add(apiFile);
 			}
-			if(outputDirectory==null){
-				File apiFile = new File(outputDirectory,".");
-				outFolderPath = apiFile.getAbsolutePath().substring(0,
-						apiFile.getAbsolutePath().lastIndexOf(File.separator));
-				System.out.println("Output Folder " + outFolderPath);	
-			}
-			else{
-				outFolderPath=outputDirectory.getAbsolutePath();
-			}
+			
+		}
+		if(null!=outputDirectory){
+			outFolderPath=outputDirectory.getAbsolutePath();
+			System.out.println("Folder Path for storing the json and extracted zip details "+outFolderPath);
+		}
+		else{
+			File apiFile = new File(options.getOutputDirectory(),".");
+			outFolderPath = apiFile.getAbsolutePath().substring(0,
+					apiFile.getAbsolutePath().lastIndexOf(File.separator));
+			System.out.println("Folder Path for storing the json and extracted zip details "+outFolderPath);
 		}
 
 		// write out json for api
@@ -144,11 +146,14 @@ public class JaxRsAnnotationParser {
 			entry = swaggerZip.getNextEntry();
 		}
 		swaggerZip.close();
+		
+		//create the war file out of the docs created by the swaggerzip
 		JarHelper helper=new JarHelper();
 		List<File> fileList = new ArrayList<File>();
-		helper.getAllFiles(new File(outFolderPath), fileList);
-		System.out.println("---Creating zip file");
-		helper.writeZipFile(new File(outFolderPath), fileList, options.getOutputDirectory());
+		File outPutFolder = new File(outFolderPath);
+		helper.getAllFiles(outPutFolder, fileList);
+		System.out.println("---Creating zip file in the location "+outPutFolder.getParentFile().getCanonicalPath());
+		helper.writeZipFile(outPutFolder, fileList, outPutFolder);
 	}
 	
 
