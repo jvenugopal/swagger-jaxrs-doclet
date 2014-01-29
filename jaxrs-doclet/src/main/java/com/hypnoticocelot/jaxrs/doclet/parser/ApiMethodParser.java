@@ -1,17 +1,31 @@
 package com.hypnoticocelot.jaxrs.doclet.parser;
 
-import com.hypnoticocelot.jaxrs.doclet.DocletOptions;
-import com.hypnoticocelot.jaxrs.doclet.model.*;
-import com.hypnoticocelot.jaxrs.doclet.translator.Translator;
-import com.sun.javadoc.*;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.collect.Collections2.filter;
 import static com.hypnoticocelot.jaxrs.doclet.parser.AnnotationHelper.parsePath;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.hypnoticocelot.jaxrs.doclet.DocletOptions;
+import com.hypnoticocelot.jaxrs.doclet.model.ApiParameter;
+import com.hypnoticocelot.jaxrs.doclet.model.ApiResponseMessage;
+import com.hypnoticocelot.jaxrs.doclet.model.HttpMethod;
+import com.hypnoticocelot.jaxrs.doclet.model.Method;
+import com.hypnoticocelot.jaxrs.doclet.model.Model;
+import com.hypnoticocelot.jaxrs.doclet.translator.Translator;
+import com.sun.javadoc.AnnotationDesc;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.ParamTag;
+import com.sun.javadoc.Parameter;
+import com.sun.javadoc.Tag;
+import com.sun.javadoc.Type;
 
 public class ApiMethodParser {
 
@@ -98,7 +112,9 @@ public class ApiMethodParser {
             sentences.append(tag.text());
         }
         String firstSentences = sentences.toString();
-
+	/**
+	 * Changes made for removing pattern matching of Implementation Notes. 
+	 */
         return new Method(
                 httpMethod,
                 methodDoc.name(),
@@ -106,7 +122,7 @@ public class ApiMethodParser {
                 parameters,
                 responseMessages,
                 firstSentences,
-                methodDoc.commentText().replace(firstSentences, ""),
+                methodDoc.commentText().substring(firstSentences.length()),
                 returnType
         );
     }
