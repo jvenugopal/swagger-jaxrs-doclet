@@ -58,6 +58,8 @@ public class AnnotationHelper {
             type = javaType.toLowerCase();
         } else if (javaType.equals("java.util.Date")) {
             type = "Date";
+        }else if (javaType.startsWith("java.io.")) {
+            type = "File";
         } else {
             int i = javaType.lastIndexOf(".");
             if (i >= 0) {
