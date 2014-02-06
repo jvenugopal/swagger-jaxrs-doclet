@@ -37,6 +37,7 @@ public class ServiceDoclet {
         Map<String, Integer> options = new HashMap<String, Integer>();
         options.put("-d", 2);
         options.put("-docBasePath", 2);
+        options.put("-createWar", 2);
         options.put("-apiBasePath", 2);
         options.put("-apiVersion", 2);
         options.put("-swaggerUiZipPath", 2);

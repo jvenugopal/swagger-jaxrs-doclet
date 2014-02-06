@@ -16,6 +16,7 @@ import static java.util.Arrays.copyOfRange;
 public class DocletOptions {
     public static final String DEFAULT_SWAGGER_UI_ZIP_PATH = "n/a";
     private File outputDirectory;
+    private boolean createWar = true;
     private String docBasePath = "http://localhost:8080";
     private String apiBasePath = "http://localhost:8080";
     private String swaggerUiZipPath = DEFAULT_SWAGGER_UI_ZIP_PATH;
@@ -69,7 +70,9 @@ public class DocletOptions {
                 parsedOptions.excludeAnnotationClasses.addAll(asList(copyOfRange(option, 1, option.length)));
             } else if (option[0].equals("-disableModels")) {
                 parsedOptions.parseModels = false;
-            } else if (option[0].equals("-errorTags")) {
+            }else if (option[0].equals("-createWar")) {
+                parsedOptions.createWar = Boolean.parseBoolean(option[1]);
+            }else if (option[0].equals("-errorTags")) {
                 parsedOptions.errorTags.addAll(asList(copyOfRange(option, 1, option.length)));;
             } else if (option[0].equals("-typesToTreatAsOpaque")) {
                 parsedOptions.typesToTreatAsOpaque.addAll(asList(copyOfRange(option, 1, option.length)));;
@@ -127,9 +130,14 @@ public class DocletOptions {
         return translator;
     }
 
+    
     public DocletOptions setTranslator(Translator translator) {
         this.translator = translator;
         return this;
     }
+
+	public boolean isCreateWarEnabled() {
+		return createWar;
+	}
 
 }

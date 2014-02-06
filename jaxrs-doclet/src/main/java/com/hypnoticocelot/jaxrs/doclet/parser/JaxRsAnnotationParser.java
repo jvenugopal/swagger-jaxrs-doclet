@@ -105,55 +105,60 @@ public class JaxRsAnnotationParser {
 				options.getDocBasePath(), resources);
 		File docFile = new File(outputDirectory, "service.json");
 		recorder.record(docFile, listing);
-		// Copy swagger-ui into the output directory.
-		ZipInputStream swaggerZip;
-		if (DocletOptions.DEFAULT_SWAGGER_UI_ZIP_PATH.equals(swaggerUiZipPath)) {
-			swaggerZip = new ZipInputStream(
-					ServiceDoclet.class.getResourceAsStream("/swagger-ui.zip"));
-			System.out
-					.println("Using default swagger-ui.zip file from SwaggerDoclet jar file");
-		} else {
-			if (new File(swaggerUiZipPath).exists()) {
-				swaggerZip = new ZipInputStream(new FileInputStream(
-						swaggerUiZipPath));
-				System.out.println("Using swagger-ui.zip file from: "
-						+ swaggerUiZipPath);
-			} else {
-				File f = new File(".");
-				System.out.println("SwaggerDoclet working directory: "
-						+ f.getAbsolutePath());
-				System.out.println("-swaggerUiZipPath not set correct: "
-						+ swaggerUiZipPath);
-
-				throw new RuntimeException(
-						"-swaggerUiZipPath not set correct, file not found: "
-								+ swaggerUiZipPath);
-			}
-		}
-		ZipEntry entry = swaggerZip.getNextEntry();
-		while (entry != null) {
-			final File swaggerFile = new File(outputDirectory, entry.getName());
-			if (entry.isDirectory()) {
-				if (!swaggerFile.isDirectory() && !swaggerFile.mkdirs()) {
-					throw new RuntimeException("Unable to create directory: "
-							+ swaggerFile);
-				}
-			} else {
-				System.out.println("");
-				recorder.record(swaggerFile, swaggerZip);
-			}
-
-			entry = swaggerZip.getNextEntry();
-		}
-		swaggerZip.close();
 		
-		//create the war file out of the docs created by the swaggerzip
-		JarHelper helper=new JarHelper();
-		List<File> fileList = new ArrayList<File>();
-		File outPutFolder = new File(outFolderPath);
-		helper.getAllFiles(outPutFolder, fileList);
-		System.out.println("---Creating zip file in the location "+outPutFolder.getParentFile().getCanonicalPath());
-		helper.writeZipFile(outPutFolder, fileList, outPutFolder);
+		//Zip file will be unzipped to the target location only if the below condition states as true.
+		if(options.isCreateWarEnabled()){
+			// Copy swagger-ui into the output directory.
+			ZipInputStream swaggerZip;
+			if (DocletOptions.DEFAULT_SWAGGER_UI_ZIP_PATH.equals(swaggerUiZipPath)) {
+				swaggerZip = new ZipInputStream(
+						ServiceDoclet.class.getResourceAsStream("/swagger-ui.zip"));
+				System.out
+						.println("Using default swagger-ui.zip file from SwaggerDoclet jar file");
+			} else {
+				if (new File(swaggerUiZipPath).exists()) {
+					swaggerZip = new ZipInputStream(new FileInputStream(
+							swaggerUiZipPath));
+					System.out.println("Using swagger-ui.zip file from: "
+							+ swaggerUiZipPath);
+				} else {
+					File f = new File(".");
+					System.out.println("SwaggerDoclet working directory: "
+							+ f.getAbsolutePath());
+					System.out.println("-swaggerUiZipPath not set correct: "
+							+ swaggerUiZipPath);
+
+					throw new RuntimeException(
+							"-swaggerUiZipPath not set correct, file not found: "
+									+ swaggerUiZipPath);
+				}
+			}
+			ZipEntry entry = swaggerZip.getNextEntry();
+			while (entry != null) {
+				final File swaggerFile = new File(outputDirectory, entry.getName());
+				if (entry.isDirectory()) {
+					if (!swaggerFile.isDirectory() && !swaggerFile.mkdirs()) {
+						throw new RuntimeException("Unable to create directory: "
+								+ swaggerFile);
+					}
+				} else {
+					System.out.println("");
+					recorder.record(swaggerFile, swaggerZip);
+				}
+
+				entry = swaggerZip.getNextEntry();
+			}
+			swaggerZip.close();
+			
+			//create the war file out of the docs created by the swaggerzip
+			JarHelper helper=new JarHelper();
+			List<File> fileList = new ArrayList<File>();
+			File outPutFolder = new File(outFolderPath);
+			helper.getAllFiles(outPutFolder, fileList);
+			System.out.println("---Creating zip file in the location "+outPutFolder.getParentFile().getCanonicalPath());
+			helper.writeZipFile(outPutFolder, fileList, outPutFolder);
+		}
+		
 	}
 	
 
